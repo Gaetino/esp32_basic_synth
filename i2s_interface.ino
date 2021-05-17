@@ -14,8 +14,8 @@
 /*
  * Define and connect your PINS to DAC here
  */
-#define I2S_BCLK_PIN	25
-#define I2S_WCLK_PIN	27
+#define I2S_BCLK_PIN	5
+#define I2S_WCLK_PIN	25
 #define I2S_DOUT_PIN	26
 
 
