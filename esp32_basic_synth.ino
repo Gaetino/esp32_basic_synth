@@ -18,7 +18,10 @@
  * You can modify the sample rate as you want
  */
 #define SAMPLE_RATE	48000
+#define PW GPIO_NUM_21
 
+int counte = 0;
+uint64_t millis_save = 0;
 
 /*
  * this is more an experiment required for other data formats
@@ -67,6 +70,10 @@ void setup()
 
     Serial.printf("Firmware started successfully\n");
 
+    gpio_reset_pin(PW);
+    gpio_set_direction(PW, GPIO_MODE_OUTPUT);        
+    gpio_set_level(PW, 1);
+
 #if 0 /* activate this line to get a tone on startup to test the DAC */
     Synth_NoteOn(64);
 #endif
@@ -79,6 +86,15 @@ void setup()
  */
 inline void Loop_1Hz(void)
 {
+  if(counte==0) Synth_NoteOn(60);
+  if(counte==1) Synth_NoteOff(60);
+  if(counte==2) Synth_NoteOn(72);
+  if(counte==3) Synth_NoteOff(72);
+
+  Serial.println(counte);
+
+  counte++;
+  if(counte>3) counte=0;
 
 }
 
@@ -90,16 +106,16 @@ inline void Loop_1Hz(void)
  */
 void loop()
 {
-    static uint32_t loop_cnt_1hz;
     static uint8_t loop_count_u8 = 0;
 
     loop_count_u8++;
 
-    loop_cnt_1hz ++;
-    if (loop_cnt_1hz >= SAMPLE_RATE)
+    if(millis()>(millis_save+1000))
     {
-        Loop_1Hz();
+      millis_save=millis();
+      Loop_1Hz();
     }
+   
 
 #ifdef I2S_NODAC
     if (writeDAC(l_sample))
@@ -126,4 +142,3 @@ void loop()
         Midi_Process();
     }
 }
-
